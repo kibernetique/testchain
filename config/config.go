@@ -15,6 +15,10 @@ type Config struct {
 	ServerWriteTimeout    time.Duration `env:"SERVER_WRITE_TIMEOUT,default=10s"`
 	ServerShutdownTimeout time.Duration `env:"SERVER_SHUTDOWN_TIMEOUT,default=30s"`
 	ServerMaxUploadSize   int           `env:"SERVER_MAX_UPLOAD_SIZE,default=128"` // in megabytes
+
+	// Blockchain
+	BcConnectionUrl  string        `env:"BLOCKCHAIN_CONNECTION_URL,default=https://mainnet.infura.io/v3/4bf9cf69d33f4c7395938604e3e69ce0"`
+	BcRequestTimeout time.Duration `env:"BLOCKCHAIN_REQUEST_TIMEOUT,default=10s"` // in seconds
 }
 
 func GetFromEnv(ctx context.Context) (*Config, error) {

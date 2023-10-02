@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"testchain/config"
 	"testchain/handlers"
+	"testchain/internal/blockchain"
+	"testchain/internal/blockchain/ethclient"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -23,13 +25,18 @@ func main() {
 		logger.Fatal("Config loading fail: " + err.Error())
 	}
 
-	balanceHandlers := handlers.NewBalance(logger)
-	txInfoHandlers := handlers.NewTxInfo(logger)
+	// creating blockchain client with ethereum client
+	ethclient, err := ethclient.NewEthClient(config.BcConnectionUrl)
+	blockchainClient := blockchain.NewClient(ethclient)
+
+	// creating hanldlers
+	balanceHandler := handlers.NewBalance(logger, blockchainClient, config)
+	txInfoHandler := handlers.NewTxInfo(logger, blockchainClient, config)
 
 	r := mux.NewRouter()
 	r.StrictSlash(true)
-	r.HandleFunc("/balance/{addr}", balanceHandlers.Get).Methods(http.MethodGet)
-	r.HandleFunc("/txinfo/{txhash}", txInfoHandlers.Get).Methods(http.MethodGet)
+	r.HandleFunc("/balance/{addr}", balanceHandler.Get).Methods(http.MethodGet)
+	r.HandleFunc("/txinfo/{txhash}", txInfoHandler.Get).Methods(http.MethodGet)
 	http.Handle("/", r)
 
 	s := &http.Server{

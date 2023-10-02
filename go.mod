@@ -1,6 +1,6 @@
 module testchain
 
-go 1.21.1
+go 1.20
 
 require (
 	github.com/Microsoft/go-winio v0.6.1 // indirect
